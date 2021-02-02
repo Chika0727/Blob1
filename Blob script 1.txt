@@ -1,0 +1,323 @@
+
+
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
+local w = library:CreateWindow("BlobWare") -- Creates the window
+
+local b = w:CreateFolder("Hyper Clickers") -- Creates the folder(U will put here your buttons,etc)
+
+b:Toggle("Auto Farmer",function(bool)
+    shared.toggle = bool
+    print(shared.toggle)
+    getgenv().farmer = bool;
+
+while wait() do
+    if getgenv().farmer == true then
+        game.ReplicatedStorage.Remotes.Click:FireServer()
+    end
+end
+end)
+
+local b = w:CreateFolder("Ronopoli") -- Creates the folder(U will put here your buttons,etc)
+
+
+
+b:Button("Give Mony",function()
+    function get()
+        for i , v in pairs(game:GetService("Workspace").Pieces:GetChildren()) do
+            if v.Player.Value == game.Players.LocalPlayer.Name then 
+                return v
+            end
+        end
+    end
+    local ohInstance1 = get()
+    local ohNumber2 = 31
+    local ohNumber3 = 2
+    local ohNil4 = nil
+    local ohNumber5 = 0
+    
+    
+    for i = 1 , 100 ,1 do
+        workspace.movementPath.movePieceEvent:FireServer(ohInstance1, ohNumber2, ohNumber3, ohNil4, ohNumber5)
+    end
+end)
+
+b:Button("Hop Arund",function()
+    function get()
+        for i , v in pairs(game:GetService("Workspace").Pieces:GetChildren()) do
+            if v.Player.Value == game.Players.LocalPlayer.Name then 
+                return v
+            end
+        end
+    end
+    for i = 1 , 31 , 1 do 
+    local ohInstance1 = get()
+    local ohNumber2 = i
+    local ohNumber3 = i
+    local ohNil4 = nil
+    local ohNumber5 = 0
+    workspace.movementPath.movePieceEvent:FireServer(ohInstance1, ohNumber2, ohNumber3, ohNil4, ohNumber5)
+    end
+end)
+
+b:Button("Paswort Bypass",function()
+    while wait() do 
+        for i , v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.joinMatch.popUp.scrollFrame:GetChildren()) do
+            if v.Name == 'MatchItem' and v.MatchItem:FindFirstChild('password') then 
+                v.MatchItem.password.Value = '' 
+            end
+        end
+    end
+end)
+
+local b = w:CreateFolder("Arsenal") -- Creates the folder(U will put here your buttons,etc)
+
+b:Toggle("Sailent Aim Team chek",function(bool)
+    shared.toggle = bool
+    print(shared.toggle)
+    local function YEBYMQ_fake_script() -- toggle.LocalScript 
+        local script = Instance.new('LocalScript', toggle)
+    
+        
+        
+        _G.silentaim = bool
+        
+        local players = game:GetService("Players")
+        local plr = players.LocalPlayer
+        local mouse = plr:GetMouse()
+        local camera = game.Workspace.CurrentCamera
+        local teamcheck = true
+        
+    local function ClosestPlayerToMouse()
+        local target = nil
+        local dist = math.huge
+    for i,v in pairs(players:GetPlayers()) do
+        if v.Name ~= plr.Name then
+            if v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") and _G.silentaim and teamcheck and v.TeamColor ~= plr.TeamColor then
+                local screenpoint = camera:WorldToScreenPoint(v.Character.HumanoidRootPart.Position)
+                        local check = (Vector2.new(mouse.X,mouse.Y)-Vector2.new(screenpoint.X,screenpoint.Y)).magnitude
+    
+                if check < dist then
+                    target  = v
+                    dist = check
+                end
+            end
+        end
+    end
+    
+    return target 
+    end
+        
+        local mt = getrawmetatable(game)
+        local namecall = mt.__namecall
+        setreadonly(mt,false)
+    
+        mt.__namecall = function(self,...)
+            local args = {...}
+            local method = getnamecallmethod()
+    
+            if tostring(self) == "HitPart" and method == "FireServer" then
+                print("so?")
+                args[1] = ClosestPlayerToMouse().Character.Head
+                args[2] = ClosestPlayerToMouse().Character.Head.Position
+                return self.FireServer(self, unpack(args))
+            end
+            return namecall(self,...)
+        end
+    end
+    coroutine.wrap(YEBYMQ_fake_script)()
+end)
+
+
+
+local b = w:CreateFolder("Universal") -- Creates the folder(U will put here your buttons,etc)
+
+b:Toggle("Infinet Jump",function(bool)
+    shared.toggle = bool
+    print(shared.toggle)
+    _G.infinjump = bool
+
+    local Player = game:GetService("Players").LocalPlayer
+    local Mouse = Player:GetMouse()
+    Mouse.KeyDown:connect(function(k)
+    if _G.infinjump then
+    if k:byte() == 32 then
+    Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    Humanoid:ChangeState("Jumping")
+    wait(0.1)
+    Humanoid:ChangeState("Seated")
+    end
+    end
+    end)
+ 
+    local Player = game:GetService("Players").LocalPlayer
+    local Mouse = Player:GetMouse()
+    Mouse.KeyDown:connect(function(k)
+    k = k:lower()
+    if k == "f" then
+    if _G.infinjump == true then
+    _G.infinjump = false
+    else
+    _G.infinjump = true
+    end
+    end
+    end)
+end)
+
+
+
+b:Toggle("NoClip",function(bool)
+    shared.toggle = bool
+    print(shared.toggle)
+    nclip = bool
+    game:GetService('RunService').Stepped:Connect(function()
+        if nclip then
+            game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+        end
+    end)
+    local p = game.Players.LocalPlayer
+local mo = p:GetMouse()
+end)
+
+b:Slider("JumpPower",{
+    min = 0; -- min value of the slider
+    max = 500; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(value)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+end)
+
+b:Slider("Gravity",{
+    min = -1000; -- min value of the slider
+    max = 1000; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(value)
+    game.workspace.Gravity = value
+end)
+
+
+b:Slider("WalkSpeed",{
+    min = 0; -- min value of the slider 
+    max = 150; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(T)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = T
+end)
+
+b:Button("Name Esp",function()
+    loadstring(game:HttpGet(('https://pastebin.com/raw/XP1YZGJW')))()
+end)
+
+b:Button("Tp TO Player GUI",function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/BLobi111/Blob1/main/Tp%20To%20Player.txt')))()
+end)
+
+
+b:DestroyGui()
+
+local b = w:CreateFolder("Murder Mystery 2") -- Creates the folder(U will put here your buttons,etc)
+
+b:Button("Tp to Lobby",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(-95.3000259, 138.574768, 21.8999023)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+b:Button("Tp to Factory Map",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(-3377.96582, 41.3801003, 1389.06677)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+b:Button("Tp to Crsamas Map 1",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(-4928.49268, -26.8127556, -1851.19446)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+local b = w:CreateFolder("Prison Life") -- Creates the folder(U will put here your buttons,etc)
+
+b:Button("Mod Remington 870",function()
+    local gun = require(game.Players.LocalPlayer.Backpack["Remington 870"].GunStates)
+    gun["AutoFire"] = true
+    gun["FireRate"] = 0.00001
+    gun["MaxAmmo"] = 99999999
+    GUN["CurrentAmmo"] = 99999999
+end)
+
+b:Button("Mod M9",function()
+    local gun = require(game.Players.LocalPlayer.Backpack["M9"].GunStates)
+    gun["AutoFire"] = true
+    gun["FireRate"] = 0.00001
+    gun["MaxAmmo"] = 99999999
+    GUN["CurrentAmmo"] = 99999999
+end)
+
+b:Button("Mod AK-47",function()
+    local gun = require(game.Players.LocalPlayer.Backpack["AK-47"].GunStates)
+    gun["AutoFire"] = true
+    gun["FireRate"] = 0.00001
+    gun["MaxAmmo"] = 99999999
+    GUN["CurrentAmmo"] = 99999999
+end)
+
+b:Button("Give Guns",function()
+    Workspace.Remote.ItemHandler:InvokeServer(Workspace.Prison_ITEMS.giver["Remington 870"].ITEMPICKUP)
+    Workspace.Remote.ItemHandler:InvokeServer(Workspace.Prison_ITEMS.giver["M9"].ITEMPICKUP)
+    Workspace.Remote.ItemHandler:InvokeServer(Workspace.Prison_ITEMS.giver["AK-47"].ITEMPICKUP)
+end)
+
+b:Button("Mod Remington 870",function()
+    local gun = require(game.Players.LocalPlayer.Backpack["Remington 870"].GunStates)
+    gun["AutoFire"] = true
+    gun["FireRate"] = 0.00001
+    gun["MaxAmmo"] = 99999999
+    GUN["CurrentAmmo"] = 99999999
+end)
+
+b:Button("Mod Taser",function()
+    local gun = require(game.Players.LocalPlayer.Backpack["Taser"].GunStates)
+   
+    gun["AutoFire"] = true
+    gun["FireRate"] = 0.00001
+    gun["MaxAmmo"] = 99999999
+    GUN["CurrentAmmo"] = 99999999
+end)
+
+b:Button("Tp to Crime Base",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(-920.860107, 94.1270523, 2165.01563)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+b:Button("Tp to Plice",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(820.751404, 99.9900055, 2256.94287)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+b:Button("Tp to Prison",function()
+    local pl = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local location = CFrame.new(932.277466, 102.78994, 2430.12988)
+    local humanoid = game.Players.LocalPlayer.Character.Humanoid
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    wait(0.1)
+    pl.CFrame = location
+end)
+
+
+
