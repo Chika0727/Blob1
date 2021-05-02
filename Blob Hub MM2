@@ -1,0 +1,219 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+    local Window = Library.CreateLib("Blob Hub                              MM2                       Blocky#4164", "GrapeTheme")
+    local Tab = Window:NewTab("Random Staff")
+    local Section = Tab:NewSection("Random Staff")
+
+Section:NewButton("INFINITE GHOST (people can’t see you)", "Na", function()
+    loadstring(game:HttpGet("https://ghostbin.co/paste/mp5q4y/raw", true))()
+end)
+
+Section:NewButton("Bomb Spam", "Equip the Bomb Befor Pressing it", function()
+    -- << GetServices >>
+local Players = game:GetService("Players")
+
+-- << Variables >>
+local BOMB_AMOUNT = 200-- how many bombs will be spawned.
+local LocalPlayer = Players.LocalPlayer
+
+assert(LocalPlayer.Character:FindFirstChild("FakeBomb"), "You need to equip the PrankBomb.")
+
+for i = 1, BOMB_AMOUNT do
+    LocalPlayer.Character.FakeBomb.Remote:FireServer(LocalPlayer.Character.Head.CFrame, 50)
+end
+end)
+
+Section:NewButton("Fake Inventory", "Cliant side Only :(", function()
+    local WeaponOwnRange = {
+          min=1,
+        max=5
+         }
+           
+          local DataBase, PlayerData = getrenv()._G.Database, getrenv()._G.PlayerData
+           
+         local newOwned = {}
+           
+        for i,v in next, DataBase.Item do
+        newOwned[i] = math.random(WeaponOwnRange.min, WeaponOwnRange.max) -- newOwned[Weapon]: ItemCount
+         end
+           
+        local PlayerWeapons = PlayerData.Weapons
+           
+        game:GetService("RunService"):BindToRenderStep("InventoryUpdate", 0, function()
+         PlayerWeapons.Owned = newOwned
+         end)
+           
+        game.Players.LocalPlayer.Character.Humanoid.Health = 0
+end)
+Section:NewButton("Emote Unlocker", "Unlocks All Emots", function()
+    local emote = require(game:GetService("ReplicatedStorage").Modules.EmoteModule).GeneratePage
+
+  local target = game:GetService("Players").LocalPlayer.PlayerGui.MainGUI.Game:FindFirstChild("Emotes")
+  local emotelist = {"headless","zombie","zen","ninja","floss","dab"}
+  emote(emotelist,target,'I Hacked Your Emotes')
+end)
+
+Section:NewToggle("Coin Farmer With GodMode", "Farms with GodMode Enabled", function(state)
+    getgenv().CoinFarm = state
+    getgenv().TpDelay = 1.75 -- 1.75 and above is recommended if you dont want to get kicked
+    
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/WetCheezit/MurderMystery2/main/CoinFarm.lua"))()
+end)
+
+    
+    local Tab = Window:NewTab("Main")
+    local Section = Tab:NewSection("Esp")
+
+    Section:NewButton("M / S Detacktor", "Shows M / S As Notifycatin!", function()
+        local plrs = game.Players
+function gmurderer()
+   for i, v in pairs(plrs:GetChildren()) do
+       if v:WaitForChild("Backpack"):FindFirstChild("Knife") or (v.Character and v.Character:FindFirstChild("Knife")) then
+           return v.Name
+       end
+   end
+end
+
+function gsherrif()
+   for i, v in pairs(plrs:GetChildren()) do
+       if v:WaitForChild("Backpack"):FindFirstChild("Gun") or (v.Character and v.Character:FindFirstChild("Gun")) then
+           return v.Name
+       end
+   end
+end
+
+print("Murderer : " .. gmurderer())
+print("Sherrif : " .. gsherrif())
+end)
+
+Section:NewButton("Seriff / Murder Line Esp", "Shows M and S", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/NjzcBZXC"))()
+end)
+
+local Section = Tab:NewSection("Combat")
+Section:NewButton("Knife Sailent Aim", "Only As Murder!!", function()
+    local Players = game:GetService("Players")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+
+local function GetClosestPlayer()
+   local ClosestPlayer = nil
+   local FarthestDistance = math.huge
+
+   for i, v in pairs(Players.GetPlayers(Players)) do
+       if v ~= LocalPlayer and v.Character and v.Character.FindFirstChild(v.Character, "HumanoidRootPart") then
+           local DistanceFromPlayer = (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
+
+           if DistanceFromPlayer < FarthestDistance then
+               FarthestDistance = DistanceFromPlayer
+               ClosestPlayer = v
+           end
+       end
+   end
+
+   if ClosestPlayer then
+       return ClosestPlayer
+   end
+end
+
+local GameMetaTable = getrawmetatable(game)
+local OldGameMetaTableNamecall = GameMetaTable.__namecall
+setreadonly(GameMetaTable, false)
+
+GameMetaTable.__namecall = newcclosure(function(object, ...)
+   local NamecallMethod = getnamecallmethod()
+   local Arguments = {...}
+
+   if NamecallMethod == "FireServer" and tostring(object) == "Throw" then
+       local ClosestPlayer = GetClosestPlayer()
+
+       if ClosestPlayer and ClosestPlayer.Character then
+           Arguments[2] = ClosestPlayer.Character.Head.Position
+       end
+   end
+
+   return OldGameMetaTableNamecall(object, unpack(Arguments))
+end)
+
+setreadonly(GameMetaTable, true)
+end)
+
+local Tab = Window:NewTab("Local Player")
+local Section = Tab:NewSection("Movement")
+
+Section:NewSlider("Walk Speed", "Maks You faster\n Defult = 16 ", 200, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+Section:NewSlider("JumpPower", "Maaks You Jump Higer", 250, 50, function(s) -- 500 (MaxValue) | 0 (MinValue)
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+Section:NewToggle("Noclip", "You can Run Thru walls With it", function(bool)
+nclip = bool
+game:GetService('RunService').Stepped:Connect(function()
+    if nclip then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+    end
+end)
+local p = game.Players.LocalPlayer
+local mo = p:GetMouse()
+end)
+
+Section:NewToggle("Infinet Jump", "you can Jump as much you want to", function(bool)
+_G.infinjump = bool
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+if _G.infinjump then
+if k:byte() == 32 then
+Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Humanoid:ChangeState("Jumping")
+wait(0.1)
+Humanoid:ChangeState("Seated")
+end
+end
+end)
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+k = k:lower()
+if k == "f" then
+if _G.infinjump == true then
+_G.infinjump = false
+else
+_G.infinjump = true
+end
+end
+end)
+end)
+
+Section:NewButton("Reset", "Resets Your Movement", function()
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+end)
+
+local Tab = Window:NewTab("Esp")
+local Section = Tab:NewSection("Esp")
+Section:NewButton("Corne Boxes Esp (rainbow)", "Shows Player Position", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Corner%20Esp"))()
+end)
+
+Section:NewButton("Line Esp", "Shows Player Position With a Line", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Line%20Esp"))()
+end)
+
+Section:NewButton("Box Esp", "Maks Boxes", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Box%20Esp"))()
+end)
+
+Section:NewButton("Name Esp", "Shows The Names", function()
+loadstring(game:HttpGet(('https://pastebin.com/raw/XP1YZGJW')))()
+end)
+
+local Tab = Window:NewTab("Setings")
+local Section = Tab:NewSection("Menu")
+
+Section:NewKeybind("Menu Keybunde", "Set Your Keybind", Enum.KeyCode.F, function()
+Library:ToggleUI()
+end)
