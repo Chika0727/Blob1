@@ -1,0 +1,270 @@
+ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+    local Window = Library.CreateLib("Blob Hub                              Arsenal                    Blocky#4164", "GrapeTheme")
+    local Tab = Window:NewTab("Random Staff")
+    local Section = Tab:NewSection("Random Staff")
+Section:NewButton("Rainbow Guns", "Collor for Guns (Dont use Wapen Skins With it)", function()
+            local c = 1
+    function zigzag(X)
+    return math.acos(math.cos(X * math.pi)) / math.pi
+    end
+    game:GetService("RunService").RenderStepped:Connect(function()
+    if game.Workspace.Camera:FindFirstChild('Arms') then
+    for i,v in pairs(game.Workspace.Camera.Arms:GetDescendants()) do
+    if v.ClassName == 'MeshPart' then 
+        v.Color = Color3.fromHSV(zigzag(c),1,1)
+        c = c + .0001
+    end
+    end
+    end
+end)
+end)
+Section:NewButton("Extanded Hitbox", "Bigger Hitbox", function()
+    -- thanks to JasonJJK on v3rm for helping me improve this script!
+
+hitboxSize = 13 -- Change hitbox size here
+visiblity = 10-- 10 for invisible, 0 for visible
+
+
+local function expandHitbox(target) -- expand hitbox function (basic)  
+   -- Prevent errors by waiting until everything loads in for the target
+   repeat wait() until target.Character
+   repeat wait() until target.Character:FindFirstChild("HeadHB")
+   repeat wait() until target.Character:FindFirstChild("HumanoidRootPart")
+   
+   -- expand hitbox
+   target.Character.HeadHB.Size = Vector3.new(hitboxSize,hitboxSize,hitboxSize)
+   target.Character.HeadHB.CanCollide = false
+   target.Character.HeadHB.Transparency = visiblity
+   target.Character.HumanoidRootPart.Size = Vector3.new(hitboxSize,hitboxSize,hitboxSize)
+   target.Character.HumanoidRootPart.CanCollide = false
+   target.Character.HumanoidRootPart.Transparency = visiblity
+   target.Character.RightUpperLeg.Size = Vector3.new(hitboxSize,hitboxSize,hitboxSize)
+   target.Character.RightUpperLeg.CanCollide = false
+   target.Character.RightUpperLeg.Transparency = 10
+   target.Character.LeftUpperLeg.CanCollide = false
+   target.Character.LeftUpperLeg.Size = Vector3.new(hitboxSize,hitboxSize,hitboxSize)
+   target.Character.LeftUpperLeg.Transparency = 10
+end
+
+-- What players do we do this to?
+
+for i,v in pairs(game.Players:GetPlayers()) do --exisiting players
+   if v ~= game:GetService("Players").LocalPlayer and v.Character then
+       expandHitbox(v)
+           v.CharacterAdded:Connect(function(character)
+               expandHitbox(character)
+       end)
+   end
+   end
+end)
+
+Section:NewButton("shoot to Kill", "Basicly Kill All", function()
+    local a
+local b
+repeat game:GetService("RunService").Heartbeat:Wait() until game.Players.LocalPlayer and game.Players.LocalPlayer.PlayerGui:FindFirstChild("GUI")
+for i,v in next, getgc() do
+  if (type(v) == 'function') and (debug.getinfo(v).name == 'firebullet') then
+     a = getfenv(v);
+     b = v
+  end
+end
+repeat game.RunService.Heartbeat:Wait() until game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+game.Players.LocalPlayer.Character.Humanoid:WaitForChild("KMS")
+local gunsilent = true
+hook = hookfunction(a.firebullet, function(...)
+   local args = {...}
+   local Gun = game.ReplicatedStorage.Weapons:FindFirstChild(game.Players.LocalPlayer.NRPBS.EquippedTool.Value);
+   if gunsilent then
+       local Crit = math.random() > .6 and true or false;
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v and v.Character and v.Character:FindFirstChild("Head") then
+               local Distance = (game.Players.LocalPlayer.Character.Head.Position - v.Character.Head.Position).magnitude
+               for i = 1,5 do
+                   game.ReplicatedStorage.Events.HitPart:FireServer(v.Character.Head,
+                   v.Character.Head.Position + Vector3.new(math.random(), math.random(), math.random()),
+                   Gun.Name,
+                   Crit and 2 or 1,
+                   Distance,
+                   Backstab,
+                   Crit,
+                   false,
+                   1,
+                   false,
+                   Gun.FireRate.Value,
+                   Gun.ReloadTime.Value,
+                   Gun.Ammo.Value,
+                   Gun.StoredAmmo.Value,
+                   Gun.Bullets.Value,
+                   Gun.EquipTime.Value,
+                   Gun.RecoilControl.Value,
+                   Gun.Auto.Value,
+                   Gun['Speed%'].Value,
+                   game.ReplicatedStorage.wkspc.DistributedTime.Value);
+               end
+           end
+       end
+   end
+return hook(...)
+end)
+end)
+Section:NewButton("Monny $3600", "Givs you 3600 Mony Once I Think", function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/BLobi111/Blob1/main/arsenal%203600%20Mony')))()
+end)
+local Tab = Window:NewTab("Main")
+local Section = Tab:NewSection("Aimbot")
+Section:NewButton("Sailent aim", "Kind of Buggy", function()
+    Section:NewSlider("FOV", "Set It To Defult = 100", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+        --> VARIABLES <--
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local mouse = plr:GetMouse()
+local camera = game:GetService("Workspace").CurrentCamera
+ 
+--> FUNCTIONS <--
+function notBehindWall(target)
+    local ray = Ray.new(plr.Character.Head.Position, (target.Position - plr.Character.Head.Position).Unit * 300)
+    local part, position = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(ray, {plr.Character}, false, true)
+    if part then
+        local humanoid = part.Parent:FindFirstChildOfClass("Humanoid")
+        if not humanoid then
+            humanoid = part.Parent.Parent:FindFirstChildOfClass("Humanoid")
+        end
+        if humanoid and target and humanoid.Parent == target.Parent then
+            local pos, visible = camera:WorldToScreenPoint(target.Position)
+            if visible then
+                return true
+            end
+        end
+    end
+end
+ 
+function getPlayerClosestToMouse()
+    local target = nil
+    local maxDist = s
+    for _,v in pairs(plrs:GetPlayers()) do
+        if v.Character then
+            if v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") and v.TeamColor ~= plr.TeamColor then
+                local pos, vis = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                local dist = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(pos.X, pos.Y)).magnitude
+                if dist < maxDist and vis then
+                    local torsoPos = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                    local torsoDist = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(torsoPos.X, torsoPos.Y)).magnitude
+                    local headPos = camera:WorldToViewportPoint(v.Character.Head.Position)
+                    local headDist = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(headPos.X, headPos.Y)).magnitude
+                    if torsoDist > headDist then
+                        if notBehindWall(v.Character.Head) then
+                            target = v.Character.Head
+                        end
+                    else
+                        if notBehindWall(v.Character.HumanoidRootPart) then
+                            target = v.Character.HumanoidRootPart
+                        end
+                    end
+                    maxDist = dist
+                end
+            end
+        end
+    end
+    return target
+end
+ 
+--> Hooking to the remote <--
+local gmt = getrawmetatable(game)
+setreadonly(gmt, false)
+local oldNamecall = gmt.__namecall
+ 
+gmt.__namecall = newcclosure(function(self, ...)
+    local Args = {...}
+    local method = getnamecallmethod()
+    if tostring(self) == "HitPart" and tostring(method) == "FireServer" then
+        Args[1] = getPlayerClosestToMouse()
+        Args[2] = getPlayerClosestToMouse().Position
+        return self.FireServer(self, unpack(Args))
+    end
+    return oldNamecall(self, ...)
+end)
+
+    end)
+end)
+
+local Tab = Window:NewTab("Local Player")
+local Section = Tab:NewSection("Movement")
+
+Section:NewSlider("Walk Speed", "Maks You faster\n Defult = 16 ", 200, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+Section:NewSlider("JumpPower", "Maaks You Jump Higer", 250, 50, function(s) -- 500 (MaxValue) | 0 (MinValue)
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+Section:NewToggle("Noclip", "You can Run Thru walls With it", function(bool)
+nclip = bool
+game:GetService('RunService').Stepped:Connect(function()
+    if nclip then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+    end
+end)
+local p = game.Players.LocalPlayer
+local mo = p:GetMouse()
+end)
+
+Section:NewToggle("Infinet Jump", "you can Jump as much you want to", function(bool)
+_G.infinjump = bool
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+if _G.infinjump then
+if k:byte() == 32 then
+Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Humanoid:ChangeState("Jumping")
+wait(0.1)
+Humanoid:ChangeState("Seated")
+end
+end
+end)
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+k = k:lower()
+if k == "f" then
+if _G.infinjump == true then
+_G.infinjump = false
+else
+_G.infinjump = true
+end
+end
+end)
+end)
+
+Section:NewButton("Reset", "Resets Your Movement", function()
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+end)
+
+local Tab = Window:NewTab("Esp")
+local Section = Tab:NewSection("Esp")
+Section:NewButton("Corne Boxes Esp (rainbow)", "Shows Player Position", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Corner%20Esp"))()
+end)
+
+Section:NewButton("Line Esp", "Shows Player Position With a Line", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Line%20Esp"))()
+end)
+
+Section:NewButton("Box Esp", "Maks Boxes", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Box%20Esp"))()
+end)
+
+Section:NewButton("Name Esp", "Shows The Names", function()
+loadstring(game:HttpGet(('https://pastebin.com/raw/XP1YZGJW')))()
+end)
+
+local Tab = Window:NewTab("Setings")
+local Section = Tab:NewSection("Menu")
+
+Section:NewKeybind("Menu Keybunde", "Set Your Keybind", Enum.KeyCode.F, function()
+Library:ToggleUI()
+end)
