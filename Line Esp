@@ -3,7 +3,7 @@ local camera = game:GetService("Workspace").CurrentCamera
 local CurrentCamera = workspace.CurrentCamera
 local worldToViewportPoint = CurrentCamera.worldToViewportPoint
 
-_G.TeamCheck = true
+_G.TeamCheck = false
 
 for i,v in pairs(game.Players:GetChildren()) do
     local Tracer = Drawing.new("Line")
