@@ -1,0 +1,9 @@
+if game.PlaceId == 155615604 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Blob%20Hub%20Prison%20Life"))()
+elseif game.PlaceId == 3956818381 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Blob%20Hub%20Ninja%20Leagends"))()
+elseif game.PlaceId == 142823291 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Blob%20Hub%20MM2"))()
+elseif game.PlaceId == 286090429 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Blob%20Hub%20Arsenal"))()
+end
