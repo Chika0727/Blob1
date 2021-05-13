@@ -1,113 +1,161 @@
- local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-    local Window = Library.CreateLib("Blob Hub                              Prison Life                   Blocky#4164", "GrapeTheme")
-    local Tab = Window:NewTab("Main")
-    
-    local Section = Tab:NewSection("Gun Giver")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Blob Hub                              Prison Life                   Blocky#4164", "GrapeTheme")
+local Tab = Window:NewTab("Main")
+
+local Section = Tab:NewSection("Gun Giver")
 
 Section:NewDropdown("Give Guns", "You Get Guns", {"M9", "Remington 870", "AK-47"}, function(v)
-    local A_1 = game:GetService("Workspace")["Prison_ITEMS"].giver[v].ITEMPICKUP
-     local Event = game:GetService("Workspace").Remote.ItemHandler
-    Event:InvokeServer(A_1)
+local A_1 = game:GetService("Workspace")["Prison_ITEMS"].giver[v].ITEMPICKUP
+ local Event = game:GetService("Workspace").Remote.ItemHandler
+Event:InvokeServer(A_1)
 end)
 
-    local Section = Tab:NewSection("Gun Modder")
-    Section:NewDropdown("Gun Mod", "Makes the gun op", {"M9", "Remington 870", "AK-47"}, function(v)
-        local module = nil
-        if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(v) then
-            module = require(game:GetService("Players").LocalPlayer.Backpack[v].GunStates)
-        elseif game:GetService("Players").LocalPlayer.Character:FindFirstChild(v) then
-            module = require(game:GetService("Players").LocalPlayer.Character[v].GunStates)
-        end
-        if module ~= nil then
-            module["MaxAmmo"] = math.huge
-            module["CurrentAmmo"] = math.huge
-            module["StoredAmmo"] = math.huge
-            module["FireRate"] = 0.000001
-            module["Spread"] = 0
-            module["Range"] = math.huge
-            module["Bullets"] = 10
-            module["ReloadTime"] = 0.000001
-            module["AutoFire"] = true
-        end
-    end)
+local Section = Tab:NewSection("Gun Modder")
+Section:NewDropdown("Gun Mod", "Makes the gun op", {"M9", "Remington 870", "AK-47"}, function(v)
+    local module = nil
+    if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(v) then
+        module = require(game:GetService("Players").LocalPlayer.Backpack[v].GunStates)
+    elseif game:GetService("Players").LocalPlayer.Character:FindFirstChild(v) then
+        module = require(game:GetService("Players").LocalPlayer.Character[v].GunStates)
+    end
+    if module ~= nil then
+        module["MaxAmmo"] = math.huge
+        module["CurrentAmmo"] = math.huge
+        module["StoredAmmo"] = math.huge
+        module["FireRate"] = 0.000001
+        module["Spread"] = 0
+        module["Range"] = math.huge
+        module["Bullets"] = 10
+        module["ReloadTime"] = 0.000001
+        module["AutoFire"] = true
+    end
+end)
 
-    local Tab = Window:NewTab("Local Player")
-    local Section = Tab:NewSection("Movement")
-    
+local Section = Tab:NewSection("Misc")
+
+Section:NewButton("Kill All", "Kills Everyone", function()
+    local players = game:GetService("Players");
+local runservice = game:GetService("RunService");
+
+local localplayer = players.LocalPlayer;
+
+
+local meleeevent = game.ReplicatedStorage.meleeEvent;
+local signal = loadstring(game:HttpGet("https://raw.githubusercontent.com/Quenty/NevermoreEngine/version2/Modules/Shared/Events/Signal.lua"))();
+local attacking = signal.new();
+local queue = {cancontinue = false};
+
+
+attacking:Connect(function(plr, char)
+    local killed = false;
+    local killedcon; killedcon = plr.CharacterRemoving:Connect(function()
+        killed = true;
+        queue.cancontinue = true;
+        killedcon:Disconnect();
+        killedcon = nil;
+    end);
+    local step; step = runservice.Heartbeat:Connect(function()
+        if killed then
+            step:Disconnect();
+            step = nil;
+        end
+        if char:FindFirstChild("Head") and localplayer.Character and localplayer.Character:FindFirstChild("HumanoidRootPart") then
+            localplayer.Character.HumanoidRootPart.CFrame = char.Head.CFrame + Vector3.new(0, localplayer.Character.Humanoid.HipHeight, 0);
+            meleeevent:FireServer(plr);
+        end
+    end);
+end);
+
+for i,v in pairs(players:GetPlayers()) do
+    if v ~= localplayer then
+        if v.Character and localplayer.Character and v.Character:FindFirstChild("Head") and localplayer.Character:FindFirstChild("HumanoidRootPart") then
+            attacking:Fire(v, v.Character);
+            repeat
+                runservice.Heartbeat:Wait();
+            until queue.cancontinue;
+            queue.cancontinue = false;
+        end
+    end
+end
+end)
+
+local Tab = Window:NewTab("Local Player")
+local Section = Tab:NewSection("Movement")
+
 Section:NewSlider("Walk Speed", "Maks You faster\n Defult = 16 ", 200, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
 end)
 
 Section:NewSlider("JumpPower", "Maaks You Jump Higer", 250, 50, function(s) -- 500 (MaxValue) | 0 (MinValue)
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
 end)
 
 Section:NewToggle("Noclip", "You can Run Thru walls With it", function(bool)
-    nclip = bool
-    game:GetService('RunService').Stepped:Connect(function()
-        if nclip then
-            game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-        end
-    end)
-    local p = game.Players.LocalPlayer
+nclip = bool
+game:GetService('RunService').Stepped:Connect(function()
+    if nclip then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+    end
+end)
+local p = game.Players.LocalPlayer
 local mo = p:GetMouse()
 end)
 
 Section:NewToggle("Infinet Jump", "you can Jump as much you want to", function(bool)
-    _G.infinjump = bool
+_G.infinjump = bool
 
-    local Player = game:GetService("Players").LocalPlayer
-    local Mouse = Player:GetMouse()
-    Mouse.KeyDown:connect(function(k)
-    if _G.infinjump then
-    if k:byte() == 32 then
-    Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    Humanoid:ChangeState("Jumping")
-    wait(0.1)
-    Humanoid:ChangeState("Seated")
-    end
-    end
-    end)
- 
-    local Player = game:GetService("Players").LocalPlayer
-    local Mouse = Player:GetMouse()
-    Mouse.KeyDown:connect(function(k)
-    k = k:lower()
-    if k == "f" then
-    if _G.infinjump == true then
-    _G.infinjump = false
-    else
-    _G.infinjump = true
-    end
-    end
-    end)
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+if _G.infinjump then
+if k:byte() == 32 then
+Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Humanoid:ChangeState("Jumping")
+wait(0.1)
+Humanoid:ChangeState("Seated")
+end
+end
+end)
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+k = k:lower()
+if k == "f" then
+if _G.infinjump == true then
+_G.infinjump = false
+else
+_G.infinjump = true
+end
+end
+end)
 end)
 
 Section:NewButton("Reset", "Resets Your Movement", function()
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
 end)
 
 local Tab = Window:NewTab("Esp")
 local Section = Tab:NewSection("Esp")
 Section:NewButton("Corne Boxes Esp (rainbow)", "Shows Player Position", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Corner%20Esp"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Corner%20Esp"))()
 end)
 
 Section:NewButton("Line Esp", "Shows Player Position With a Line", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Line%20Esp"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Line%20Esp"))()
 end)
 
 Section:NewButton("Box Esp", "Maks Boxes", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Box%20Esp"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BLobi111/Blob1/main/Box%20Esp"))()
 end)
 
 Section:NewButton("Name Esp", "Shows The Names", function()
-    loadstring(game:HttpGet(('https://pastebin.com/raw/XP1YZGJW')))()
+loadstring(game:HttpGet(('https://pastebin.com/raw/XP1YZGJW')))()
 end)
 
 local Tab = Window:NewTab("Setings")
 local Section = Tab:NewSection("Menu")
 Section:NewKeybind("Menu Keybunde", "Set Your Keybind", Enum.KeyCode.F, function()
-	Library:ToggleUI()
+Library:ToggleUI()
 end)
