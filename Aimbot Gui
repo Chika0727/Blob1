@@ -1,0 +1,734 @@
+local lib = loadstring(game:HttpGet("https://bit.ly/baconlib"))()
+local version, changelog = lib:GetInfo()
+local window = lib:CreateWindow("Blob Hub  "..version)
+local label = lib:CreateLabel(window, "Aimbot")
+
+
+local button = lib:CreateButton(window, "Enable Aimbot", function()
+    local lib = loadstring(game:HttpGet("https://bit.ly/baconlib"))()
+local version, changelog = lib:GetInfo()
+local window = lib:CreateWindow("Blob Hub  "..version)
+local label = lib:CreateLabel(window, "Aimbot")
+
+
+local plr = game.Players.LocalPlayer
+local camera = game.Workspace.CurrentCamera
+local UIS = game.UserInputService
+local mouse = plr:GetMouse()
+local LOCKON = "Head"
+_G.aim = true
+UIS.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        _G.aim = true
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        _G.aim = false
+    end
+end)
+
+local FOV = Drawing.new("Circle") -- Change these ESP Settings to anything at https://x.synapse.to/docs/reference/drawing_lib.html
+FOV.Visible = true
+FOV.Color = Color3.fromRGB(255, 0, 0)
+FOV.Thickness = 2
+FOV.NumSides = 100
+FOV.Radius = 125
+FOV.Filled = false
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    local closest = nil
+    local min = math.huge
+    FOV.Position = Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)
+    if _G.aim == true then
+        for i, v in pairs(game.Players:GetChildren()) do
+            if v.TeamColor ~= plr.TeamColor then
+                if game.Players:FindFirstChild(v.Name) and v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v.Name ~= plr.Name  and v.Character.Humanoid.Health > 0 then
+                    local plrpos, OnScreen = camera:WorldToViewportPoint(v.Character[LOCKON].Position)
+                    if OnScreen then
+                        local distance = math.sqrt(math.pow(mouse.X - plrpos.X, 2), math.pow(mouse.Y - plrpos.Y, 2))
+                        local fovdistance = math.sqrt(math.pow(FOV.Position.X - plrpos.X, 2) + math.pow(FOV.Position.Y - plrpos.Y, 2))
+                        if fovdistance <= FOV.Radius then
+                            if distance < min then
+                                min = distance
+                                closest = v
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        if game.Players:FindFirstChild(closest.Name) and closest.Character ~= nil and closest.Character:FindFirstChild("Humanoid") ~= nil and closest.Character:FindFirstChild("HumanoidRootPart") ~= nil and closest.Name ~= plr.Name  and closest.Character.Humanoid.Health > 0 then
+            camera.CFrame = CFrame.new(camera.CFrame.Position, closest.Character[LOCKON].CFrame.Position)
+        end
+    end
+end)
+
+
+
+
+local slider = lib:CreateSlider(window, "FOV Raidus", 0, 500, 50, function(value)
+    FOV.Radius = value
+end)
+
+
+local toggle = lib:CreateToggle(window, "Show Fov'", false, function(toggleState)
+    FOV.Visible = toggleState
+end)
+
+local toggle = lib:CreateToggle(window, "Filled Fov", false, function(toggleState)
+    FOV.Filled = toggleState 
+end)
+
+local slider = lib:CreateSlider(window, "FOV Thickness", 0, 50, 2, function(value)
+    FOV.Thickness = value
+end)
+
+end)
+
+local window = lib:CreateWindow("Blob Hub  "..version)
+
+local label = lib:CreateLabel(window, "Esp")
+
+local button = lib:CreateButton(window, "Esp With Everyting", function()
+    -- Preview: https://cdn.discordapp.com/attachments/796378086446333984/818089455897542687/unknown.png
+-- Made by Blissful#4992
+local Settings = {
+    Box_Color = Color3.fromRGB(255, 0, 0),
+    Tracer_Color = Color3.fromRGB(255, 0, 0),
+    Tracer_Thickness = 1,
+    Box_Thickness = 1,
+    Tracer_Origin = "Bottom", -- Middle or Bottom if FollowMouse is on this won't matter...
+    Tracer_FollowMouse = false,
+    Tracers = true
+}
+local Team_Check = {
+    TeamCheck = false, -- if TeamColor is on this won't matter...
+    Green = Color3.fromRGB(0, 255, 0),
+    Red = Color3.fromRGB(255, 0, 0)
+}
+local TeamColor = true
+
+--// SEPARATION
+local player = game:GetService("Players").LocalPlayer
+local camera = game:GetService("Workspace").CurrentCamera
+local mouse = player:GetMouse()
+
+local function NewQuad(thickness, color)
+    local quad = Drawing.new("Quad")
+    quad.Visible = false
+    quad.PointA = Vector2.new(0,0)
+    quad.PointB = Vector2.new(0,0)
+    quad.PointC = Vector2.new(0,0)
+    quad.PointD = Vector2.new(0,0)
+    quad.Color = color
+    quad.Filled = false
+    quad.Thickness = thickness
+    quad.Transparency = 1
+    return quad
+end
+
+local function NewLine(thickness, color)
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.From = Vector2.new(0, 0)
+    line.To = Vector2.new(0, 0)
+    line.Color = color 
+    line.Thickness = thickness
+    line.Transparency = 1
+    return line
+end
+
+local function Visibility(state, lib)
+    for u, x in pairs(lib) do
+        x.Visible = state
+    end
+end
+
+local function ToColor3(col) --Function to convert, just cuz c;
+    local r = col.r --Red value
+    local g = col.g --Green value
+    local b = col.b --Blue value
+    return Color3.new(r,g,b); --Color3 datatype, made of the RGB inputs
+end
+
+local black = Color3.fromRGB(0, 0 ,0)
+local function ESP(plr)
+    local library = {
+        --//Tracer and Black Tracer(black border)
+        blacktracer = NewLine(Settings.Tracer_Thickness*2, black),
+        tracer = NewLine(Settings.Tracer_Thickness, Settings.Tracer_Color),
+        --//Box and Black Box(black border)
+        black = NewQuad(Settings.Box_Thickness*2, black),
+        box = NewQuad(Settings.Box_Thickness, Settings.Box_Color),
+        --//Bar and Green Health Bar (part that moves up/down)
+        healthbar = NewLine(3, black),
+        greenhealth = NewLine(1.5, black)
+    }
+
+    local function Colorize(color)
+        for u, x in pairs(library) do
+            if x ~= library.healthbar and x ~= library.greenhealth and x ~= library.blacktracer and x ~= library.black then
+                x.Color = color
+            end
+        end
+    end
+
+    local function Updater()
+        local connection
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil then
+                local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if OnScreen then
+                    local head = camera:WorldToViewportPoint(plr.Character.Head.Position)
+                    local DistanceY = math.clamp((Vector2.new(head.X, head.Y) - Vector2.new(HumPos.X, HumPos.Y)).magnitude, 2, math.huge)
+                    
+                    local function Size(item)
+                        item.PointA = Vector2.new(HumPos.X + DistanceY, HumPos.Y - DistanceY*2)
+                        item.PointB = Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2)
+                        item.PointC = Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)
+                        item.PointD = Vector2.new(HumPos.X + DistanceY, HumPos.Y + DistanceY*2)
+                    end
+                    Size(library.box)
+                    Size(library.black)
+
+                    --//Tracer 
+                    if Settings.Tracers then
+                        if Settings.Tracer_Origin == "Middle" then
+                            library.tracer.From = camera.ViewportSize*0.5
+                            library.blacktracer.From = camera.ViewportSize*0.5
+                        elseif Settings.Tracer_Origin == "Bottom" then
+                            library.tracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y) 
+                            library.blacktracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y)
+                        end
+                        if Settings.Tracer_FollowMouse then
+                            library.tracer.From = Vector2.new(mouse.X, mouse.Y+36)
+                            library.blacktracer.From = Vector2.new(mouse.X, mouse.Y+36)
+                        end
+                        library.tracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
+                        library.blacktracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
+                    else 
+                        library.tracer.From = Vector2.new(0, 0)
+                        library.blacktracer.From = Vector2.new(0, 0)
+                        library.tracer.To = Vector2.new(0, 0)
+                        library.blacktracer.To = Vector2.new(0, 02)
+                    end
+
+                    --// Health Bar
+                    local d = (Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2) - Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)).magnitude 
+                    local healthoffset = plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth * d
+
+                    library.greenhealth.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
+                    library.greenhealth.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2 - healthoffset)
+
+                    library.healthbar.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
+                    library.healthbar.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y - DistanceY*2)
+
+                    local green = Color3.fromRGB(0, 255, 0)
+                    local red = Color3.fromRGB(255, 0, 0)
+
+                    library.greenhealth.Color = red:lerp(green, plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth);
+
+                    if Team_Check.TeamCheck then
+                        if plr.TeamColor == player.TeamColor then
+                            Colorize(Team_Check.Green)
+                        else 
+                            Colorize(Team_Check.Red)
+                        end
+                    else 
+                        library.tracer.Color = Settings.Tracer_Color
+                        library.box.Color = Settings.Box_Color
+                    end
+                    if TeamColor == true then
+                        Colorize(plr.TeamColor.Color)
+                    end
+                    Visibility(true, library)
+                else 
+                    Visibility(false, library)
+                end
+            else 
+                Visibility(false, library)
+                if game.Players:FindFirstChild(plr.Name) == nil then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(Updater)()
+end
+
+for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+    if v.Name ~= player.Name then
+        coroutine.wrap(ESP)(v)
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(newplr)
+    if newplr.Name ~= player.Name then
+        coroutine.wrap(ESP)(newplr)
+    end
+end)
+end)
+
+local button = lib:CreateButton(window, "Box Esp", function()
+    local plr = game.Players.LocalPlayer
+local camera = game.Workspace.CurrentCamera
+
+for i, v in pairs(game.Players:GetChildren()) do
+    local Top = Drawing.new("Line")
+    Top.Visible = false
+    Top.From = Vector2.new(0, 0)
+    Top.To = Vector2.new(200, 200)
+    Top.Color = Color3.fromRGB(255, 0, 0)
+    Top.Thickness = 2
+    Top.Transparency = 1
+
+    local Bottom = Drawing.new("Line")
+    Bottom.Visible = false
+    Bottom.From = Vector2.new(0, 0)
+    Bottom.To = Vector2.new(200, 200)
+    Bottom.Color = Color3.fromRGB(255, 0, 0)
+    Bottom.Thickness = 2
+    Bottom.Transparency = 1
+
+    local Left = Drawing.new("Line")
+    Left.Visible = false
+    Left.From = Vector2.new(0, 0)
+    Left.To = Vector2.new(200, 200)
+    Left.Color = Color3.fromRGB(255, 0, 0)
+    Left.Thickness = 2
+    Left.Transparency = 1
+
+    local Right = Drawing.new("Line")
+    Right.Visible = false
+    Right.From = Vector2.new(0, 0)
+    Right.To = Vector2.new(200, 200)
+    Right.Color = Color3.fromRGB(255, 0, 0)
+    Right.Thickness = 2
+    Right.Transparency = 1
+
+    function ESP()
+        local connection
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if v.Character ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v.Name ~= plr.Name  and v.Character.Humanoid.Health > 0 then 
+                local ScreenPos, OnScreen = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                if OnScreen then
+                    local Scale = v.Character.Head.Size.Y/2
+                    local Size = Vector3.new(2, 3, 0) * (Scale * 2)
+                    local humpos = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                    local TL = camera:WorldToViewportPoint((v.Character.HumanoidRootPart.CFrame * CFrame.new(Size.X, Size.Y, 0)).p)
+                    local TR = camera:WorldToViewportPoint((v.Character.HumanoidRootPart.CFrame * CFrame.new(-Size.X, Size.Y, 0)).p)
+                    local BL = camera:WorldToViewportPoint((v.Character.HumanoidRootPart.CFrame * CFrame.new(Size.X, -Size.Y, 0)).p)
+                    local BR = camera:WorldToViewportPoint((v.Character.HumanoidRootPart.CFrame * CFrame.new(-Size.X, -Size.Y, 0)).p)
+
+                    Top.From = Vector2.new(TL.X, TL.Y)
+                    Top.To = Vector2.new(TR.X, TR.Y)
+
+                    Left.From = Vector2.new(TL.X, TL.Y)
+                    Left.To = Vector2.new(BL.X, BL.Y)
+
+                    Right.From = Vector2.new(TR.X, TR.Y)
+                    Right.To = Vector2.new(BR.X, BR.Y)
+
+                    Bottom.From = Vector2.new(BL.X, BL.Y)
+                    Bottom.To = Vector2.new(BR.X, BR.Y)
+
+                    if v.TeamColor == plr.TeamColor then
+                        Top.Color = Color3.fromRGB(0, 255, 0)
+                        Left.Color = Color3.fromRGB(0, 255, 0)
+                        Bottom.Color = Color3.fromRGB(0, 255, 0)
+                        Right.Color = Color3.fromRGB(0, 255, 0)
+                    else 
+                        Top.Color = Color3.fromRGB(255, 0, 0)
+                        Left.Color = Color3.fromRGB(255, 0, 0)
+                        Bottom.Color = Color3.fromRGB(255, 0, 0)
+                        Right.Color = Color3.fromRGB(255, 0, 0)
+                    end
+
+                    Top.Visible = true
+                    Left.Visible = true
+                    Bottom.Visible = true
+                    Right.Visible = true
+                else 
+                    Top.Visible = false
+                    Left.Visible = false
+                    Bottom.Visible = false
+                    Right.Visible = false
+                end
+            else 
+                Top.Visible = false
+                Left.Visible = false
+                Bottom.Visible = false
+                Right.Visible = false
+                if game.Players:FindFirstChild(v.Name) == nil then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(ESP)()
+end
+
+game.Players.PlayerAdded:Connect(function(newplr) --Parameter gets the new player that has been added
+    local Top = Drawing.new("Line")
+    Top.Visible = false
+    Top.From = Vector2.new(0, 0)
+    Top.To = Vector2.new(200, 200)
+    Top.Color = Color3.fromRGB(255, 0, 0)
+    Top.Thickness = 2
+    Top.Transparency = 1
+
+    local Bottom = Drawing.new("Line")
+    Bottom.Visible = false
+    Bottom.From = Vector2.new(0, 0)
+    Bottom.To = Vector2.new(200, 200)
+    Bottom.Color = Color3.fromRGB(255, 0, 0)
+    Bottom.Thickness = 2
+    Bottom.Transparency = 1
+
+    local Left = Drawing.new("Line")
+    Left.Visible = false
+    Left.From = Vector2.new(0, 0)
+    Left.To = Vector2.new(200, 200)
+    Left.Color = Color3.fromRGB(255, 0, 0)
+    Left.Thickness = 2
+    Left.Transparency = 1
+
+    local Right = Drawing.new("Line")
+    Right.Visible = false
+    Right.From = Vector2.new(0, 0)
+    Right.To = Vector2.new(200, 200)
+    Right.Color = Color3.fromRGB(255, 0, 0)
+    Right.Thickness = 2
+    Right.Transparency = 1
+
+    function ESP()
+        local connection
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if newplr.Character ~= nil and newplr.Character:FindFirstChild("HumanoidRootPart") ~= nil and newplr.Name ~= plr.Name  and newplr.Character.Humanoid.Health > 0 then
+                local ScreenPos, OnScreen = camera:WorldToViewportPoint(newplr.Character.HumanoidRootPart.Position)
+                if OnScreen then
+                    local Scale = newplr.Character.Head.Size.Y/2
+                    local Size = Vector3.new(2, 3, 0) * (Scale * 2)
+                    local humpos = camera:WorldToViewportPoint(newplr.Character.HumanoidRootPart.Position)
+                    local TL = camera:WorldToViewportPoint((newplr.Character.HumanoidRootPart.CFrame * CFrame.new(Size.X, Size.Y, 0)).p)
+                    local TR = camera:WorldToViewportPoint((newplr.Character.HumanoidRootPart.CFrame * CFrame.new(-Size.X, Size.Y, 0)).p)
+                    local BL = camera:WorldToViewportPoint((newplr.Character.HumanoidRootPart.CFrame * CFrame.new(Size.X, -Size.Y, 0)).p)
+                    local BR = camera:WorldToViewportPoint((newplr.Character.HumanoidRootPart.CFrame * CFrame.new(-Size.X, -Size.Y, 0)).p)
+
+                    Top.From = Vector2.new(TL.X, TL.Y)
+                    Top.To = Vector2.new(TR.X, TR.Y)
+
+                    Left.From = Vector2.new(TL.X, TL.Y)
+                    Left.To = Vector2.new(BL.X, BL.Y)
+
+                    Right.From = Vector2.new(TR.X, TR.Y)
+                    Right.To = Vector2.new(BR.X, BR.Y)
+
+                    Bottom.From = Vector2.new(BL.X, BL.Y)
+                    Bottom.To = Vector2.new(BR.X, BR.Y)
+
+                    if newplr.TeamColor == plr.TeamColor then
+                        Top.Color = Color3.fromRGB(0, 255, 0)
+                        Left.Color = Color3.fromRGB(0, 255, 0)
+                        Bottom.Color = Color3.fromRGB(0, 255, 0)
+                        Right.Color = Color3.fromRGB(0, 255, 0)
+                    else 
+                        Top.Color = Color3.fromRGB(255, 0, 0)
+                        Left.Color = Color3.fromRGB(255, 0, 0)
+                        Bottom.Color = Color3.fromRGB(255, 0, 0)
+                        Right.Color = Color3.fromRGB(255, 0, 0)
+                    end
+
+                    Top.Visible = true
+                    Left.Visible = true
+                    Bottom.Visible = true
+                    Right.Visible = true
+                else 
+                    Top.Visible = false
+                    Left.Visible = false
+                    Bottom.Visible = false
+                    Right.Visible = false
+                end
+            else 
+                Top.Visible = false
+                Left.Visible = false
+                Bottom.Visible = false
+                Right.Visible = false
+                if game.Players:FindFirstChild(newplr.Name) == nil then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(ESP)()
+end)
+end)
+
+local button = lib:CreateButton(window, "Skelaton Esp", function()
+    local plr = game.Players.LocalPlayer
+local camera = game.Workspace.CurrentCamera
+
+for i, v in pairs(game.Players:GetChildren()) do
+    local SkeletonTorso = Drawing.new("Line")
+    SkeletonTorso.Visible = false
+    SkeletonTorso.From = Vector2.new(0, 0)
+    SkeletonTorso.To = Vector2.new(200, 200)
+    SkeletonTorso.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonTorso.Thickness = 2
+    SkeletonTorso.Transparency = 1
+
+    local SkeletonHead = Drawing.new("Line")
+    SkeletonHead.Visible = false
+    SkeletonHead.From = Vector2.new(0, 0)
+    SkeletonHead.To = Vector2.new(200, 200)
+    SkeletonHead.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonHead.Thickness = 2
+    SkeletonHead.Transparency = 1
+
+    local SkeletonLeftLeg = Drawing.new("Line")
+    SkeletonLeftLeg.Visible = false
+    SkeletonLeftLeg.From = Vector2.new(0, 0)
+    SkeletonLeftLeg.To = Vector2.new(200, 200)
+    SkeletonLeftLeg.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonLeftLeg.Thickness = 2
+    SkeletonLeftLeg.Transparency = 1
+
+    local SkeletonRightLeg = Drawing.new("Line")
+    SkeletonRightLeg.Visible = false
+    SkeletonRightLeg.From = Vector2.new(0, 0)
+    SkeletonRightLeg.To = Vector2.new(200, 200)
+    SkeletonRightLeg.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonRightLeg.Thickness = 2
+    SkeletonRightLeg.Transparency = 1
+
+    local SkeletonLeftArm = Drawing.new("Line")
+    SkeletonLeftArm.Visible = false
+    SkeletonLeftArm.From = Vector2.new(0, 0)
+    SkeletonLeftArm.To = Vector2.new(200, 200)
+    SkeletonLeftArm.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonLeftArm.Thickness = 2
+    SkeletonLeftArm.Transparency = 1
+
+    local SkeletonRightArm = Drawing.new("Line")
+    SkeletonRightArm.Visible = false
+    SkeletonRightArm.From = Vector2.new(0, 0)
+    SkeletonRightArm.To = Vector2.new(200, 200)
+    SkeletonRightArm.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonRightArm.Thickness = 2
+    SkeletonRightArm.Transparency = 1
+
+    function ESP()
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if v.Character ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v.Name ~= plr.Name  and v.Character.Humanoid.Health > 0 then 
+                local ScreenPos, OnScreen = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                if OnScreen then
+                    local UpperTorso = camera:WorldToViewportPoint(v.Character.UpperTorso.Position)
+                    local LowerTorso = camera:WorldToViewportPoint(v.Character.LowerTorso.Position)
+
+                    local LeftLeg = camera:WorldToViewportPoint(v.Character.LeftFoot.Position)
+                    local RightLeg = camera:WorldToViewportPoint(v.Character.RightFoot.Position)
+
+                    local LeftArm = camera:WorldToViewportPoint(v.Character.LeftHand.Position)
+                    local RightArm = camera:WorldToViewportPoint(v.Character.RightHand.Position)
+
+                    local Head = camera:WorldToViewportPoint(v.Character.Head.Position)
+
+                    SkeletonTorso.From = Vector2.new(UpperTorso.X, UpperTorso.Y)
+                    SkeletonTorso.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonHead.From = Vector2.new(UpperTorso.X, UpperTorso.Y)
+                    SkeletonHead.To = Vector2.new(Head.X, Head.Y)
+
+                    SkeletonLeftLeg.From = Vector2.new(LeftLeg.X, LeftLeg.Y)
+                    SkeletonLeftLeg.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonRightLeg.From = Vector2.new(RightLeg.X, RightLeg.Y)
+                    SkeletonRightLeg.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonLeftArm.From = Vector2.new(LeftArm.X, LeftArm.Y)
+                    SkeletonLeftArm.To = Vector2.new(UpperTorso.X, UpperTorso.Y)
+
+                    SkeletonRightArm.From = Vector2.new(RightArm.X, RightArm.Y)
+                    SkeletonRightArm.To = Vector2.new(UpperTorso.X, UpperTorso.Y)
+
+                    if v.TeamColor == plr.TeamColor then
+                        SkeletonTorso.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonHead.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonLeftArm.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonLeftLeg.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonRightArm.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonRightLeg.Color = Color3.fromRGB(0, 255, 0)
+                    else 
+                        SkeletonTorso.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonHead.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonLeftArm.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonLeftLeg.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonRightArm.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonRightLeg.Color = Color3.fromRGB(255, 0, 0)
+                    end
+
+                    SkeletonTorso.Visible = true
+                    SkeletonHead.Visible = true
+                    SkeletonLeftArm.Visible = true
+                    SkeletonLeftLeg.Visible = true
+                    SkeletonRightArm.Visible = true
+                    SkeletonRightLeg.Visible = true
+                else 
+                    SkeletonTorso.Visible = false
+                    SkeletonHead.Visible = false
+                    SkeletonLeftArm.Visible = false
+                    SkeletonLeftLeg.Visible = false
+                    SkeletonRightArm.Visible = false
+                    SkeletonRightLeg.Visible = false
+                end
+            else 
+                SkeletonTorso.Visible = false
+                SkeletonHead.Visible = false
+                SkeletonLeftArm.Visible = false
+                SkeletonLeftLeg.Visible = false
+                SkeletonRightArm.Visible = false
+                SkeletonRightLeg.Visible = false
+                if game.Players:FindFirstChild(v.Name) then
+                else
+                    Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(ESP)()
+end
+
+game.Players.PlayerAdded:Connect(function(newplr) --Parameter gets the new player that has been added
+    local SkeletonTorso = Drawing.new("Line")
+    SkeletonTorso.Visible = false
+    SkeletonTorso.From = Vector2.new(0, 0)
+    SkeletonTorso.To = Vector2.new(200, 200)
+    SkeletonTorso.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonTorso.Thickness = 2
+    SkeletonTorso.Transparency = 1
+
+    local SkeletonHead = Drawing.new("Line")
+    SkeletonHead.Visible = false
+    SkeletonHead.From = Vector2.new(0, 0)
+    SkeletonHead.To = Vector2.new(200, 200)
+    SkeletonHead.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonHead.Thickness = 2
+    SkeletonHead.Transparency = 1
+
+    local SkeletonLeftLeg = Drawing.new("Line")
+    SkeletonLeftLeg.Visible = false
+    SkeletonLeftLeg.From = Vector2.new(0, 0)
+    SkeletonLeftLeg.To = Vector2.new(200, 200)
+    SkeletonLeftLeg.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonLeftLeg.Thickness = 2
+    SkeletonLeftLeg.Transparency = 1
+
+    local SkeletonRightLeg = Drawing.new("Line")
+    SkeletonRightLeg.Visible = false
+    SkeletonRightLeg.From = Vector2.new(0, 0)
+    SkeletonRightLeg.To = Vector2.new(200, 200)
+    SkeletonRightLeg.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonRightLeg.Thickness = 2
+    SkeletonRightLeg.Transparency = 1
+
+    local SkeletonLeftArm = Drawing.new("Line")
+    SkeletonLeftArm.Visible = false
+    SkeletonLeftArm.From = Vector2.new(0, 0)
+    SkeletonLeftArm.To = Vector2.new(200, 200)
+    SkeletonLeftArm.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonLeftArm.Thickness = 2
+    SkeletonLeftArm.Transparency = 1
+
+    local SkeletonRightArm = Drawing.new("Line")
+    SkeletonRightArm.Visible = false
+    SkeletonRightArm.From = Vector2.new(0, 0)
+    SkeletonRightArm.To = Vector2.new(200, 200)
+    SkeletonRightArm.Color = Color3.fromRGB(255, 0, 0)
+    SkeletonRightArm.Thickness = 2
+    SkeletonRightArm.Transparency = 1
+
+    function ESP()
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if newplr.Character ~= nil and newplr.Character:FindFirstChild("HumanoidRootPart") ~= nil and newplr.Name ~= plr.Name  and newplr.Character.Humanoid.Health > 0 then
+                local ScreenPos, OnScreen = camera:WorldToViewportPoint(newplr.Character.HumanoidRootPart.Position)
+                if OnScreen then
+                    local UpperTorso = camera:WorldToViewportPoint(newplr.Character.UpperTorso.Position)
+                    local LowerTorso = camera:WorldToViewportPoint(newplr.Character.LowerTorso.Position)
+
+                    local LeftLeg = camera:WorldToViewportPoint(newplr.Character.LeftFoot.Position)
+                    local RightLeg = camera:WorldToViewportPoint(newplr.Character.RightFoot.Position)
+
+                    local LeftArm = camera:WorldToViewportPoint(newplr.Character.LeftHand.Position)
+                    local RightArm = camera:WorldToViewportPoint(newplr.Character.RightHand.Position)
+
+                    local Head = camera:WorldToViewportPoint(newplr.Character.Head.Position)
+
+                    SkeletonTorso.From = Vector2.new(UpperTorso.X, UpperTorso.Y)
+                    SkeletonTorso.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonHead.From = Vector2.new(UpperTorso.X, UpperTorso.Y)
+                    SkeletonHead.To = Vector2.new(Head.X, Head.Y)
+
+                    SkeletonLeftLeg.From = Vector2.new(LeftLeg.X, LeftLeg.Y)
+                    SkeletonLeftLeg.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonRightLeg.From = Vector2.new(RightLeg.X, RightLeg.Y)
+                    SkeletonRightLeg.To = Vector2.new(LowerTorso.X, LowerTorso.Y)
+
+                    SkeletonLeftArm.From = Vector2.new(LeftArm.X, LeftArm.Y)
+                    SkeletonLeftArm.To = Vector2.new(UpperTorso.X, UpperTorso.Y)
+
+                    SkeletonRightArm.From = Vector2.new(RightArm.X, RightArm.Y)
+                    SkeletonRightArm.To = Vector2.new(UpperTorso.X, UpperTorso.Y)
+
+                    if newplr.TeamColor == plr.TeamColor then
+                        SkeletonTorso.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonHead.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonLeftArm.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonLeftLeg.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonRightArm.Color = Color3.fromRGB(0, 255, 0)
+                        SkeletonRightLeg.Color = Color3.fromRGB(0, 255, 0)
+                    else 
+                        SkeletonTorso.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonHead.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonLeftArm.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonLeftLeg.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonRightArm.Color = Color3.fromRGB(255, 0, 0)
+                        SkeletonRightLeg.Color = Color3.fromRGB(255, 0, 0)
+                    end
+
+                    SkeletonTorso.Visible = true
+                    SkeletonHead.Visible = true
+                    SkeletonLeftArm.Visible = true
+                    SkeletonLeftLeg.Visible = true
+                    SkeletonRightArm.Visible = true
+                    SkeletonRightLeg.Visible = true
+                else 
+                    SkeletonTorso.Visible = false
+                    SkeletonHead.Visible = false
+                    SkeletonLeftArm.Visible = false
+                    SkeletonLeftLeg.Visible = false
+                    SkeletonRightArm.Visible = false
+                    SkeletonRightLeg.Visible = false
+                end
+            else 
+                SkeletonTorso.Visible = false
+                SkeletonHead.Visible = false
+                SkeletonLeftArm.Visible = false
+                SkeletonLeftLeg.Visible = false
+                SkeletonRightArm.Visible = false
+                SkeletonRightLeg.Visible = false
+                if game.Players:FindFirstChild(newplr.Name) then
+                else
+                    Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(ESP)()
+end)
+end)
+
+
